@@ -1,17 +1,19 @@
-// src/components/Tetris.tsx
 import React, { useState, useEffect, useRef } from "react";
 
 const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 20;
 type Cell = string | null;
+
 interface Position {
   x: number;
   y: number;
 }
+
 interface Tetromino {
   shape: number[][][];
   color: string;
 }
+
 const TETROMINOES: { [key: string]: Tetromino } = {
   I: {
     shape: [
@@ -163,6 +165,7 @@ const TETROMINOES: { [key: string]: Tetromino } = {
     color: "#FF0000",
   },
 };
+
 const randomTetromino = (): {
   tetromino: Tetromino;
   position: Position;
@@ -174,8 +177,10 @@ const randomTetromino = (): {
   const position = { x: Math.floor(BOARD_WIDTH / 2) - 2, y: 0 };
   return { tetromino, position, rotation: 0 };
 };
+
 const createBoard = (): Cell[][] =>
   Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null));
+
 const Tetris: React.FC = () => {
   const [board, setBoard] = useState<Cell[][]>(createBoard());
   const [currentPiece, setCurrentPiece] = useState<{
@@ -186,7 +191,10 @@ const Tetris: React.FC = () => {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const gameIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Pour le navigateur, le type de l'interval est number
+  const gameIntervalRef = useRef<number | null>(null);
+
   const checkCollision = (
     pos: Position,
     rotation: number,
@@ -201,6 +209,7 @@ const Tetris: React.FC = () => {
     }
     return false;
   };
+
   const mergePiece = (
     board: Cell[][],
     piece: { tetromino: Tetromino; position: Position; rotation: number }
@@ -216,6 +225,7 @@ const Tetris: React.FC = () => {
     });
     return newBoard;
   };
+
   const clearLines = (
     board: Cell[][]
   ): { board: Cell[][]; linesCleared: number } => {
@@ -226,6 +236,7 @@ const Tetris: React.FC = () => {
     }
     return { board: newBoard, linesCleared };
   };
+
   const dropPiece = () => {
     const newPos = { ...currentPiece.position, y: currentPiece.position.y + 1 };
     if (!checkCollision(newPos, currentPiece.rotation, board)) {
@@ -244,15 +255,17 @@ const Tetris: React.FC = () => {
       }
     }
   };
+
   useEffect(() => {
     if (gameOver || isPaused) return;
-    gameIntervalRef.current = setInterval(() => {
+    gameIntervalRef.current = window.setInterval(() => {
       dropPiece();
     }, 500);
     return () => {
       if (gameIntervalRef.current) clearInterval(gameIntervalRef.current);
     };
   }, [currentPiece, board, gameOver, isPaused]);
+
   const move = (dir: number) => {
     const newPos = {
       ...currentPiece.position,
@@ -262,6 +275,7 @@ const Tetris: React.FC = () => {
       setCurrentPiece({ ...currentPiece, position: newPos });
     }
   };
+
   const rotate = () => {
     const newRotation =
       (currentPiece.rotation + 1) % currentPiece.tetromino.shape.length;
@@ -269,6 +283,7 @@ const Tetris: React.FC = () => {
       setCurrentPiece({ ...currentPiece, rotation: newRotation });
     }
   };
+
   const dropFast = () => {
     let newY = currentPiece.position.y;
     while (
@@ -286,6 +301,7 @@ const Tetris: React.FC = () => {
     });
     dropPiece();
   };
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (gameOver) return;
     switch (e.key) {
@@ -305,10 +321,12 @@ const Tetris: React.FC = () => {
         break;
     }
   };
+
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentPiece, board, gameOver]);
+
   const renderBoard = () => {
     const display = board.map((row) => row.slice());
     const shape = currentPiece.tetromino.shape[currentPiece.rotation];
@@ -331,9 +349,11 @@ const Tetris: React.FC = () => {
       </div>
     ));
   };
+
   const togglePause = () => {
     setIsPaused((prev) => !prev);
   };
+
   const resetGame = () => {
     setBoard(createBoard());
     setCurrentPiece(randomTetromino());
@@ -341,6 +361,7 @@ const Tetris: React.FC = () => {
     setGameOver(false);
     setIsPaused(false);
   };
+
   return (
     <div className="tetris-game">
       <div className="game-info">
