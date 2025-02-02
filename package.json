@@ -1,14 +1,15 @@
 {
-  "homepage": "https://Nasko-dev.github.io/T-tris/",
   "name": "tetris-clone",
+  "homepage": "https://Nasko-dev.github.io/T-tris",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite",
+    "dev": "vite",
     "build": "tsc -b && vite build",
+    "lint": "eslint .",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
+    "deploy": "gh-pages -d build",
     "preview": "vite preview"
   },
   "dependencies": {
